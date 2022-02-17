@@ -17,6 +17,9 @@ function App() {
   const onChange = (event) => {
     setAmount(event.target.value);
   };
+  const onSelect = (usdPrice) => {
+    console.log(usdPrice);
+  };
   return (
     <div>
       <h1>Cryptocurrency Converter Calculator</h1>
@@ -30,7 +33,10 @@ function App() {
         ) : (
           <select>
             {coins.map((coin) => (
-              <option key={coin.id}>
+              <option
+                key={coin.id}
+                onSelect={() => onSelect(coin.quotes.USD.price)}
+              >
                 {coin.name} ({coin.symbol})
               </option>
             ))}
