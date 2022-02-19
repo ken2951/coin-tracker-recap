@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 
 function App() {
-  const [amount, setAmount] = useState(1);
+  const [amount, setAmount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [coins, setCoins] = useState([]);
+  const [price, setPrice] = useState(0);
   useEffect(() => {
     fetch("https://api.coinpaprika.com/v1/tickers")
       .then((response) => response.json())
@@ -12,31 +13,30 @@ function App() {
         setLoading(false);
       });
   }, []);
-  console.log(coins);
-  const onClick = () => setAmount(1);
-  const onChange = (event) => {
+  // console.log(coins);
+  const onClick = () => setAmount(0);
+  const onInput = (event) => {
     setAmount(event.target.value);
+    setPrice((current) => current * event.target.value);
   };
-  const onSelect = (usdPrice) => {
-    console.log(usdPrice);
+  const onSelected = (event) => {
+    setPrice(event.target.value);
+    // console.log(event.target.innerText);
   };
   return (
     <div>
       <h1>Cryptocurrency Converter Calculator</h1>
       <div>
-        <input type="number" min="0" value={amount} onChange={onChange} />
+        <input type="number" min="0" value={amount} onChange={onInput} />
         <button onClick={onClick}>Reset</button>
       </div>
       <div>
         {loading ? (
           <strong>Loading...</strong>
         ) : (
-          <select>
+          <select onChange={onSelected}>
             {coins.map((coin) => (
-              <option
-                key={coin.id}
-                onSelect={() => onSelect(coin.quotes.USD.price)}
-              >
+              <option key={coin.id} value={coin.quotes.USD.price}>
                 {coin.name} ({coin.symbol})
               </option>
             ))}
@@ -50,7 +50,13 @@ function App() {
           </select>
         )}
       </div>
-      <div>{loading ? null : <div>1 Bitcoin (BTC) = 44,298.30 USD</div>}</div>
+      <div>
+        {loading ? null : (
+          <div>
+            {amount} Bitcoin (BTC) = {price} USD
+          </div>
+        )}
+      </div>
     </div>
   );
 }
